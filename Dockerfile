@@ -16,7 +16,7 @@
 FROM confluentinc/cp-kafka-connect
 
 COPY quickstart /var
-ENV CONNECT_PLUGIN_PATH="/usr/share/java,/var/jars"
+ENV CONNECT_PLUGIN_PATH="/usr/share/java,/var/jars,/usr/share/confluent-hub-components"
 
 EXPOSE 8083
 
