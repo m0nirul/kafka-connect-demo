@@ -5,6 +5,7 @@ This is a quick demo of how to work on the confluent platform
 
 
 The codes used are all Apache 2.0 licence
+
 | Description | Source | Licence |
 | ------ | ------ | ------------ |
 | cp-zookeeper | [docker hub](https://hub.docker.com/r/confluentinc/cp-zookeeper) | Apache 2 |
