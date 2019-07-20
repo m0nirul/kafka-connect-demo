@@ -55,10 +55,10 @@ To use the created service and create connectors make a post request to ``http:/
     "connector.class" : "com.datamountaineer.streamreactor.connect.cassandra.sink.CassandraSinkConnector",
     "tasks.max" : "1",
     "topics" : "swipesRecord",
-	"connect.cassandra.kcql" : "INSERT INTO swipes SELECT * FROM swipesRecord;",
-	"connect.cassandra.contact.points":"localhost",
-	"connect.cassandra.port":9042,
-	"connect.cassandra.key.space":"swipes"
+    "connect.cassandra.kcql" : "INSERT INTO swipes SELECT * FROM swipesRecord;",
+    "connect.cassandra.contact.points":"cassandrahost",
+    "connect.cassandra.port":9042,
+    "connect.cassandra.key.space":"swipes"
   }
 }
 ```
