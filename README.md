@@ -36,7 +36,7 @@ docker build --rm -t cp-kafka-connect-new .
 ```
 ### 4. Deploy the stack on the swarm
 ```
-docker stack deploy -c docker-composev2.yml connect
+docker stack deploy -c docker-composev2.yml kafka
 ```
 ### 5. Access the services
 The services wil l be deployed as per the details in ``docker-composev2.yml``. As per default configuration this are some servcice urls
