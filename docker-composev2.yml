@@ -5,9 +5,18 @@ services:
     image: confluentinc/cp-zookeeper
     hostname: zookeeper
     depends_on:
-      - default
+      - webnet
     ports:
       - "2181:2181"
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      replicas: 1
+      restart_policy:
+        condition: on-failure 
+    networks:
+      - webnet        
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -16,11 +25,20 @@ services:
     image: confluentinc/cp-kafka
     hostname: broker
     depends_on:
-      - default
+      - webnet
       - zookeeper
     ports:
       - "29092:29092"
       - "9092:9092"
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      replicas: 1
+      restart_policy:
+        condition: on-failure      
+    networks:
+      - webnet        
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
@@ -34,11 +52,20 @@ services:
     image: confluentinc/cp-schema-registry
     hostname: schema-registry
     depends_on:
-      - default
+      - webnet
       - zookeeper
       - broker
     ports:
       - "8081:8081"
+    networks:
+      - webnet      
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      replicas: 1
+      restart_policy:
+        condition: on-failure      
     environment:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
       SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: 'zookeeper:2181'
@@ -47,11 +74,21 @@ services:
     image: cp-kafka-connect-new
     hostname: connect
     depends_on:
+      - webnet
       - zookeeper
       - broker
       - schema-registry
     ports:
       - "8083:8083"
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      replicas: 1
+      restart_policy:
+        condition: on-failure      
+    networks:
+      - webnet        
     # volumes:
     #   - "/tmp/quickstart/file:/var/quickstart"
     #   - "/tmp/quickstart/jars:/var/jars"
@@ -68,10 +105,14 @@ services:
       CONNECT_STATUS_STORAGE_TOPIC: docker-connect-status
       CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
       CONNECT_KEY_CONVERTER: org.apache.kafka.connect.storage.StringConverter
-      CONNECT_VALUE_CONVERTER: io.confluent.connect.avro.AvroConverter
+      CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_KEY_CONVERTER_SCHEMAS_ENABLED: "false"
+      CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLED: "false"
       CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: http://schema-registry:8081
       CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_KEY_CONVERTER_SCHEMAS_ENABLED: "false"
       CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_VALUE_CONVERTER_SCHEMAS_ENABLED: "false"
       CONNECT_ZOOKEEPER_CONNECT: 'zookeeper:2181'
       # CONNECT_PLUGIN_PATH: /usr/share/java,/var/jars
       # Assumes image is based on confluentinc/kafka-connect-datagen:latest which is pulling 5.1.1 Connect image
@@ -85,15 +126,27 @@ services:
   rest-proxy:
     image: confluentinc/cp-kafka-rest
     depends_on:
-      - default
+      - webnet
       - zookeeper
       - broker
       - schema-registry
     ports:
       - 8082:8082
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      replicas: 1
+      restart_policy:
+        condition: on-failure      
     hostname: rest-proxy
+    networks:
+      - webnet    
     environment:
       KAFKA_REST_HOST_NAME: rest-proxy
       KAFKA_REST_BOOTSTRAP_SERVERS: 'broker:29092'
       KAFKA_REST_LISTENERS: "http://0.0.0.0:8082"
       KAFKA_REST_SCHEMA_REGISTRY_URL: 'http://schema-registry:8081'
+networks:
+  webnet:
+    driver: overlay      
