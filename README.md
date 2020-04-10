@@ -27,7 +27,7 @@ docker pull confluentinc/cp-schema-registry
 docker pull confluentinc/cp-kafka-rest
 ```
 
-### 2. Download extra jars and put it in ./quickstart/jars/*
+### 2. Download extra jars and put it in ./extraJars/jars/*
 
 
 ### 3. Build the connect Image
